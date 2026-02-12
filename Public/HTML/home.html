@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hackathon 2023</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="./CSS/home.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div id="bodyContainer">
+      <div id="bar"></div>
+      <div id="container"></div>
+    </div>
+    <script>
+      const bodyContainer = document.getElementById("bodyContainer");
+      const getContainer = (image) => `<div id="container" style="
+    background-image:url('/Img/${image}}');
+    background-repeat: no-repeat;
+    background-size: cover;"></div>`;
+      const images = [
+        "Social Media Post 1200x1200-02.jpg",
+        "Social Media Post 1200x1200-03.jpg",
+        "Social Media Post 1200x1200-01.jpg",
+      ];
+      let pointer = 0;
+      const triggerChangeImage = (pointer) => {
+        let container = document.getElementById("container");
+        if (container) container.remove();
+        bodyContainer.innerHTML = getContainer(images[pointer]);
+        //                container.setAttribute("background-image",`url('/Img/${images[pointer]}')`)
+      };
+      // setInterval(()=>
+      // {
+      //     if(pointer===2)
+      //         pointer =0
+      //     else pointer++;
+      //     triggerChangeImage(pointer)
+      // },2000)
+    </script>
+  </body>
+</html>

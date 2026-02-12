@@ -1,0 +1,33 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body
+{
+    margin: 5px;
+    padding: 5px;
+}
+#bodyContainer
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+#container
+{
+    width: 1200px;
+    height: 1200px;
+    overflow: hidden;
+    background-image:url('/Img/Social Media Post 1200x1200-03.jpg');
+    background-repeat:'no-repeat';
+    background-size: cover;
+}
+#bar
+{
+    background-color: black;
+    width: 200px;
+    height: 100vh;   
+}

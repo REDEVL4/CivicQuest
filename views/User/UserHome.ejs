@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title><%title%></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      crossorigin="anonymous"
+    />
+    <!-- <link rel="stylesheet" href="./CSS/main.css"/> -->
+    <link rel="stylesheet" href="./CSS/bootstrap.css" />
+    <link rel="stylesheet" href="./CSS/UserHome.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&display=swap"
+      rel="stylesheet"
+    />
+    <style></style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+          <div id="headerText">
+            Eco Guardians<span id="tagLine">Serving Nature</span>
+          </div></a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link headerIcons" href="/"
+              ><i class="fa fa-home" title="Home"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/game"
+              ><i class="fa fa-gamepad" title="Game"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/communityHome"
+              ><i class="fa fa-users" title="Community Service"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/UserHome">
+              <i class="fa fa-user " title="User"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/AdminHome">
+              <i class="fa fa-user-plus" title="Admin"></i
+            ></a>
+          </div>
+          <%if(userLoggedIn){%>
+            <button  type="button"  class="btn btn-secondary btn-warning">User is Logged In</button>
+            <form
+            action="/UserLogout"
+            method="post"
+            id="logout"
+          >
+            <button type="submit" class="btn btn-secondary btn-danger">Log Out</button>
+          </form>
+            <%}%>
+
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div id="alert"></div>
+      <!-- control-->
+
+      <!-- Event Modal -->
+      <div
+        class="modal fade"
+        id="staticBackdrop"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                Event Details
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body text-center" id="eventmodal"></div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- <button type="button" class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="eventRegister()">Register</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mycontainer">
+        <div class="eventHolder">
+          <div
+            class="eventcontainer"
+            id="eventcontainer"
+            style="
+              width: 900px;
+              max-height: 600px;
+              overflow-y: auto;
+              overflow-x: hidden;
+            "
+          >
+          <div class="controls">
+            <button type="button" class="btn btn-info" id="controls">
+              My Upcoming Events
+            </button>
+          </div>
+
+            <% if(upcomingEvents.length>0){%> <% for(let event of
+            upcomingEvents){%>
+            <div class="event">
+              <div class="eventItem Title">
+                <span>Event</span
+                ><span class="text-info"><%=event.Title%></span>
+              </div>
+              <div class="eventItem">
+                <span
+                  >Day:
+                  <span class="text-info"
+                    ><%=event.EventDateTime.getDate()%></span
+                  ></span
+                >
+                <span
+                  >Month:
+                  <span class="text-info"
+                    ><%=event.EventDateTime.getMonth()%></span
+                  ></span
+                >
+                <span
+                  >Year:
+                  <span class="text-info"
+                    ><%=event.EventDateTime.getFullYear()%></span
+                  ></span
+                >
+              </div>
+              <div class="eventItem NoOfParticipentsRegistered">
+                <span>No Of Participents Registered</span>
+                <span class="text-info"
+                  ><%=event.NoOfParticipentsRegistered%></span
+                >
+              </div>
+              <div class="eventItem actions">
+                <div
+                  class="btn-group"
+                  role="group"
+                  aria-label="Basic mixed styles example"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-warning"
+                    data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop"
+                    onClick="viewDetails('<%=event.EventId%>')"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+            <%}%> <% }else{%>
+            <h2 class="text-secondary">You have Not Registered for any Upcoming Event!!!</h2>
+            <%}%>
+          </div>
+        </div>
+        <div class="eventHolder">
+          <div
+            id="userRegisteredEventsContainer"
+            style="
+              width: 400px;
+              max-height: 607px;
+              overflow-y: auto;
+              overflow-x: hidden;
+            "
+          >
+          <div class="controls">
+            <button type="button" class="btn btn-danger" id="controls">
+              My Past Events
+            </button>
+          </div>
+            <% if(pastEvents.length>0){%> <% for(let event of pastEvents){%>
+            <div class="event" style="flex-direction: column">
+              <div class="eventItem Title">
+                <span>Event</span
+                ><span class="text-info"><%=event.Title%></span>
+              </div>
+              <div class="eventItem">
+                <span
+                  >Held On:
+                  <span class="text-info"
+                    ><%=event.EventDateTime.toDateString()%></span
+                  ></span
+                >
+              </div>
+              <div class="eventItem NoOfParticipentsRegistered">
+                <span>Participents</span>
+                <span class="text-info"
+                  ><%=event.NoOfParticipentsRegistered%></span
+                >
+              </div>
+              <div class="eventItem">
+                <div
+                  class="btn-group"
+                  role="group"
+                  aria-label="Basic mixed styles example"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-warning"
+                    data-bs-toggle="modal"
+                    data-bs-target="#staticBackdrop"
+                    onClick="viewDetails('<%=event.EventId%>')"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+            <%}%> <% }else{%>
+            <h2 class="text-secondary">No Past Events Found!!!</h2>
+            <%}%>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="btn position-fixed bottom-0 end-0"
+        id="liveToastBtn"
+        style="margin-bottom: 2.5%"
+      >
+        <p class="p-2 bg-primary text-white rounded">
+          Your Eco Assistant
+          <img
+            src="https://cdn3.iconfinder.com/data/icons/contact-us-set-2/256/52-512.png"
+            width="40px"
+            height="40px"
+            alt="chat"
+          />
+        </p>
+      </button>
+
+      <div
+        class="toast-container position-fixed bottom-0 end-0 p-3"
+        style="width: 400px"
+      >
+        <div
+          id="liveToast"
+          class="toast"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div class="toast-header bg-primary">
+            <!-- <img width="260px" height="70px" src="https://4.bp.blogspot.com/-UrSNCG-VncM/VDK41v4_GFI/AAAAAAAAFW0/QFj2jqhn8Dk/s1600/Logo%2BHexagon.png" class="rounded me-2" alt="..."> -->
+            <strong class="me-auto text-white">Eco Assistant</strong>
+            <!-- <small>11 mins ago</small> -->
+            <button
+              style="background-color: aliceblue"
+              type="button"
+              onclick="toggleAssistant()"
+              class="btn-close"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="toast-body text-center" style="font-weight: 600">
+            <iframe
+              src="https://webchat.botframework.com/embed/lanservice-bot?s=Wzh8jxSjVYQ.ljj1kvBs5lkpAnS0kXjDtyC7vmUQzvyGYC7n9bEyn1U"
+              style="min-width: 300px; width: 100%; min-height: 400px"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-content" >
+        <ul class="socials">
+          <li>
+            <a
+              href="https://www.facebook.com/gogreeninitiative.org/"
+              target="_blank"
+              ><i class="fa fa-facebook"></i
+            ></a>
+          </li>
+          <li>
+            <a href="https://twitter.com/greeninitiative" target="_blank"
+              ><i class="fa fa-twitter"></i
+            ></a>
+          </li>
+          <li>
+            <a href="https://instagram.com/gogreeninitiative" target="_blank"
+              ><i class="fa fa-instagram"></i
+            ></a>
+          </li>
+          <li>
+            <a
+              href="https://www.youtube.com/user/GoGreenInitiative"
+              target="_blank"
+              ><i class="fa fa-youtube"></i
+            ></a>
+          </li>
+          <li>
+            <a
+              href="https://www.linkedin.com/company/go-green-initiative/"
+              target="_blank"
+              ><i class="fa fa-linkedin-square"></i
+            ></a>
+          </li>
+          <li>
+            <span style="font-size: 9px"> copyright &copy;</span>
+            <span style="text-decoration: underline; font-size: 11px">
+              Go Green</span
+            >
+          </li>
+        </ul>
+      </div>
+    </footer>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      const alertElement = document.getElementById("alert");
+      const toastTrigger = document.getElementById("liveToastBtn");
+      const toastLiveExample = document.getElementById("liveToast");
+      const toastBootstrap =
+        bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+      toastLiveExample.addEventListener("hidden.bs.toast", () => {
+        toastTrigger.removeAttribute("hidden");
+      });
+
+      const toggleAssistant = () => {
+        toastBootstrap.hide();
+        toastTrigger.removeAttribute("hidden");
+      };
+
+      if (toastTrigger) {
+        toastTrigger.addEventListener("click", () => {
+          toastTrigger.setAttribute("hidden", "hidden");
+          toastBootstrap.show();
+        });
+      }
+      const viewDetails = async (EventId) => {
+        let staticBackdropLabel = document.getElementById(
+          "staticBackdropLabel"
+        );
+        staticBackdropLabel.innerHTML = "Event Details";
+        console.log("clicked for event", EventId);
+        var response = await fetch(`http://127.0.0.1:7000/events/${EventId}`);
+        var data = await response.json();
+        console.log(EventId, data);
+        modalHtmlData = `<div class="">
+          <h7 class="text-muted">Event</h7>
+          <p class="text-info">${data.Title}</p>
+        </div>
+        ${data.Status==='closed'?`
+        <div id="carouselExampleCaptions" class="carousel slide">
+  <div class="carousel-indicators d-md-block">
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+  <div class="carousel-inner">
+    ${data.Images.split(";").map(image=>
+    {
+      return `<div class="carousel-item active">
+      <img src="/Img/${image}" class="d-block w-100" alt="${image}">
+     </div>`
+    })}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+        `:``}
+        <div class="">
+          <h7 class="text-muted">Description</h7>
+          <p class="text-info">${data.Description}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">Active participants</h7>
+          <p class="text-info">${data.NoOfParticipentsRegistered}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">Location</h7>
+          <p class="text-info">${data.Location}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">city</h7>
+          <p class="text-info">${data.City}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">Event Scheduled on</h7>
+          <p class="text-info">${data.EventDateTime}</p>
+        </div>
+        `;
+        let modalElement = document.getElementById("eventmodal");
+        modalElement.innerHTML = modalHtmlData;
+      };
+      const eventRegister = (EventId)=>
+         {
+
+          let registerHtml = `<form class="row g-3" action="/users/events/register" method="post">
+                    <input name="EventId" id="EventId" value=${EventId} hidden></input>
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">FirstName</label>
+                        <input name="firstName" type="text" class="form-control" id="firstName">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="lastName" class="form-label">LastName</label>
+                        <input name="lastName" type="text" class="form-control" id="lastName">
+                      </div>
+                    <div class="col-12">
+                        <label for="inputEmail" class="form-label">Email</label>
+                        <input name="email" type="email" class="form-control" id="inputEmail">
+                      </div>
+                    <div class="col-12">
+                      <label for="inputAddress" class="form-label">Address</label>
+                      <input name="address" type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+                    </div>
+                    <div class="col-12">
+                      <label for="inputAddress2" class="form-label">Address 2</label>
+                      <input name="address2" type="text" class="form-control" id="inputAddress2" placeholder="Apartment,block or floor">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="inputCity" class="form-label">city</label>
+                      <input name="inputCity" type="text" class="form-control" id="inputCity">
+                    </div>
+                    <div class="col-md-4">
+                      <label for="inputState" class="form-label">State</label>
+                      <select name="state" id="inputState" class="form-select">
+                        <option selected disabled>Choose...</option>
+                        <option>Andhra Pradesh</option>
+                        <option>Telangana</option>
+                      </select>
+                    </div>
+                    <div  class="col-md-2">
+                      <label for="inputZip" class="form-label">Zip</label>
+                      <input name="inputZip" type="text" class="form-control" id="inputZip">
+                    </div>
+                    <div class="col-12">
+                       <input type="radio" class="btn-check" name="isSubscribed" id="isSubscribed" autocomplete="off">
+                       <label class="btn btn-outline-info" for="isSubscribed">Subscribe To Notifications</label>
+                    </div>
+                  </form>`
+                  let modalElement = document.getElementById("registrationEventmodal")
+                  modalElement.innerHTML = registerHtml
+         }
+        const removeAlert = () => {
+        setTimeout(() => {
+          const alertElement = document.getElementById("alert");
+          alertElement.innerHTML = null;
+          console.log("removed");
+        }, 2000);
+      };
+
+
+    </script>
+  </body>
+</html>

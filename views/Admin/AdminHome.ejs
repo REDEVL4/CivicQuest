@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title><%=title%></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.13.3/date-1.3.1/fh-3.3.1/sc-2.1.0/sb-1.4.0/sp-2.1.1/sl-1.6.1/datatables.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.13.3/date-1.3.1/fh-3.3.1/sc-2.1.0/sb-1.4.0/sp-2.1.1/sl-1.6.1/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/datetime/1.3.1/js/dataTables.dateTime.min.js"></script>
+    <link rel="stylesheet" href="./CSS/AdminHome.css" />
+    <link rel="stylesheet" href="./CSS/bootstrap.css" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* For desktop devices */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+
+      /* For mobile devices */
+      @media (max-width: 800px) {
+        th,
+        td {
+          display: block;
+        }
+
+        td {
+          border: none;
+          border-bottom: 1px solid #ddd;
+          position: relative;
+          padding-left: 50%;
+        }
+
+        td:before {
+          position: absolute;
+          top: 6px;
+          left: 6px;
+          width: 45%;
+          padding-right: 10px;
+          white-space: nowrap;
+          content: attr(data-label);
+          font-weight: bold;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+          <div id="headerText">
+            Eco Guardians<span id="tagLine">Serving Nature</span>
+          </div></a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link headerIcons" href="/"
+              ><i class="fa fa-home" title="Home"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/game"
+              ><i class="fa fa-gamepad" title="Game"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/communityHome"
+              ><i class="fa fa-users" title="Community Service"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/UserHome">
+              <i class="fa fa-user" title="User"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/AdminHome">
+              <i class="fa fa-user-plus" title="Admin"></i
+            ></a>
+          </div>
+          <%if(adminLoggedIn){%>
+          <button type="button" class="btn btn-secondary btn-warning">
+            Admin Logged In
+          </button>
+          <form
+            action="/AdminLogout"
+            method="post"
+            id="logout"
+            style="position: relative; right: 10px"
+          >
+            <button class="btn btn-secondary btn-danger">LogOut</button>
+          </form>
+          <%}%>
+        </div>
+      </nav>
+    </header>
+    <div id="alert"></div>
+    <div class="targetedContent">
+      <!-- Event Modal -->
+      <div
+        class="modal fade"
+        id="staticBackdrop"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body text-center" id="eventmodal"></div>
+            <div class="modal-footer" id="staticBackdropFooter">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <!-- <button type="button" class="btn btn-success"  data-bs-toggle="modal" data-bs-target="#staticBackdrop"  onclick="eventRegister()">Register</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <div class="mycontainer">
+        <div class="options">
+          <div>
+            <button
+              class="btn btn-outline-success"
+              data-bs-toggle="modal"
+              data-bs-target="#staticBackdrop"
+              onclick="getNewEvent()"
+            >
+              Create An Event
+            </button>
+          </div>
+        </div>
+        <!--Date Time Search Filter-->
+        <!-- <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;border-radius:15px;padding:10px;flex-wrap:wrap" class="mb-3 mt-2 p-2">
+                    <div id="hide_filters" style="display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;">
+                        <div class="" style="display:flex;flex-direction:row;align-items:center;justify-content:space-evenly;flex-wrap:wrap">
+                            <div class="form-control" style="margin:2px;width:300px">
+                                <label for="fromDate" class="form-label">From Date</label>
+                                <input class="form-control" type="text" id="fromDate" />
+                            </div>
+                            <div class="form-control" style="margin:2px;width:300px">
+                                <label for="toDate" class="form-label">To Date</label>
+                                <input class="form-control" type="text" id="toDate" />
+                            </div>
+                        </div>
+                    </div>
+            
+                </div> -->
+
+        <table
+          id="logs_table"
+          class="table table-bordered table-primary table-hover"
+          style="width: 100%"
+        >
+          <thead class="col-12">
+            <tr class="">
+              <th></th>
+              <th>Event</th>
+              <th>Description</th>
+              <th>DateTime</th>
+              <th>Max Seats</th>
+              <th>Participents Registered</th>
+              <th>Location</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <%Events.map((event)=>{%>
+            <tr>
+              <td>
+                <input
+                  class="form-check-input"
+                  name="<%=event.EventId%>"
+                  id="checkBoxEventListener"
+                  type="checkbox"
+                />
+              </td>
+              <td><%=event.Title%></td>
+              <td>
+                <%=event.Description.length>30?event.Description.substring(0,30)+'...':event.Description%>
+              </td>
+              <td><%=event.EventDateTime%></td>
+              <td><%=event.MaxNoOfSeats%></td>
+              <td><%=event.NoOfParticipentsRegistered%></td>
+              <td><%=event.Location%></td>
+              <td><%=event.City%></td>
+              <td><%=event.State%></td>
+              <%if(event.Status==='open'){%>
+              <td class="bg-success text-center"><%=event.Status%></td>
+              <%}else{%>
+              <td class="bg-danger text-center"><%=event.Status%></td>
+              <%}%>
+              <td
+                class="text-center btn-group-vertical text-center"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <button
+                  class="btn btn-info text-center"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop"
+                  onclick="viewDetails('<%=event.EventId%>')"
+                >
+                  ViewDetails
+                </button>
+                <button
+                  class="btn btn-warning text-center"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop"
+                  id="editDetails"
+                  onclick="editDetails('<%=event.EventId%>','<%=event.Title%>')"
+                >
+                  EditDetails
+                </button>
+              </td>
+            </tr>
+            <%})%>
+          </tbody>
+        </table>
+      </div>
+      <!--Bot-->
+      <button
+        type="button"
+        class="btn position-fixed bottom-0 end-0"
+        id="liveToastBtn"
+        style="margin-bottom: 2.5%"
+      >
+        <p class="p-2 bg-primary text-white rounded">
+          Your Eco Assistant
+          <img
+            src="https://cdn3.iconfinder.com/data/icons/contact-us-set-2/256/52-512.png"
+            width="40px"
+            height="40px"
+            alt="chat"
+          />
+        </p>
+      </button>
+
+      <div
+        class="toast-container position-fixed bottom-0 end-0 p-3"
+        style="width: 400px"
+      >
+        <div
+          id="liveToast"
+          class="toast"
+          role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
+        >
+          <div class="toast-header bg-primary">
+            <!-- <img width="260px" height="70px" src="https://4.bp.blogspot.com/-UrSNCG-VncM/VDK41v4_GFI/AAAAAAAAFW0/QFj2jqhn8Dk/s1600/Logo%2BHexagon.png" class="rounded me-2" alt="..."> -->
+            <strong class="me-auto text-white">Eco Assistant</strong>
+            <!-- <small>11 mins ago</small> -->
+            <button
+              style="background-color: aliceblue"
+              type="button"
+              onclick="toggleAssistant()"
+              class="btn-close"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="toast-body text-center" style="font-weight: 600">
+            <iframe
+              src="https://webchat.botframework.com/embed/lanservice-bot?s=Wzh8jxSjVYQ.ljj1kvBs5lkpAnS0kXjDtyC7vmUQzvyGYC7n9bEyn1U"
+              style="min-width: 300px; width: 100%; min-height: 400px"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-content position-fixed bottom-0 left-0 w-100 bg-dark">
+        <ul class="socials">
+          <li>
+            <a
+              href="https://www.facebook.com/gogreeninitiative.org/"
+              target="_blank"
+              ><i class="fa fa-facebook"></i
+            ></a>
+          </li>
+          <li>
+            <a href="https://twitter.com/greeninitiative" target="_blank"
+              ><i class="fa fa-twitter"></i
+            ></a>
+          </li>
+          <li>
+            <a href="https://instagram.com/gogreeninitiative" target="_blank"
+              ><i class="fa fa-instagram"></i
+            ></a>
+          </li>
+          <li>
+            <a
+              href="https://www.youtube.com/user/GoGreenInitiative"
+              target="_blank"
+              ><i class="fa fa-youtube"></i
+            ></a>
+          </li>
+          <li>
+            <a
+              href="https://www.linkedin.com/company/go-green-initiative/"
+              target="_blank"
+              ><i class="fa fa-linkedin-square"></i
+            ></a>
+          </li>
+          <li>
+            <span style="font-size: 9px"> copyright &copy;</span>
+            <span style="text-decoration: underline; font-size: 11px">
+              Go Green</span
+            >
+          </li>
+        </ul>
+      </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const toastTrigger = document.getElementById("liveToastBtn");
+      const toastLiveExample = document.getElementById("liveToast");
+      const toastBootstrap =
+        bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+      toastLiveExample.addEventListener("hidden.bs.toast", () => {
+        toastTrigger.removeAttribute("hidden");
+      });
+
+      const toggleAssistant = () => {
+        toastBootstrap.hide();
+        toastTrigger.removeAttribute("hidden");
+      };
+
+      if (toastTrigger) {
+        toastTrigger.addEventListener("click", () => {
+          toastTrigger.setAttribute("hidden", "hidden");
+          toastBootstrap.show();
+        });
+      }
+    </script>
+    <script type="">
+      const submitHandler = (event) => {
+        event.preventDefault();
+        console.log("submitted");
+      };
+
+      var minDate, maxDate;
+      $(document).ready(function () {
+        //uniqueExecutionIdForMail
+        // $('input[type="checkbox"]').on('change', function () {
+        //     if (this.checked) {
+        //         $(this).parent().parent().toggleClass('selected')
+        //     }
+        //     else {
+        //         $(this).parent().parent().toggleClass('selected')
+
+        //     }
+        // })
+        $('button[id="editDetails"]').on("click", function () {
+          if (!$($(this).parent().parent()[0]).hasClass("index")) {
+            $(this).parent().parent().toggleClass("index");
+          }
+        });
+
+        $("#advanceSearchbtn").on("click", () => {
+          if ($("#advanceSearch").attr("hidden") === "hidden") {
+            $("#advanceSearch").removeAttr("hidden");
+            $("#advanceSearchbtn").attr("class", "btn btn-outline-warning");
+          } else {
+            $("#advanceSearch").attr("hidden", "hidden");
+            $("#advanceSearchbtn").attr("class", "btn btn-outline-dark");
+          }
+        });
+        var table = $("#logs_table").DataTable({
+          searching: true,
+          columnDefs: [
+            {
+              targets: 3,
+              render: function (data, type, full, meta) {
+                return moment(data).format("DD MMM YYYY HH:mm:ss");
+              },
+            },
+          ],
+        });
+
+        // $('#fromDate,#toDate').on('keyup change', function () {
+        //     table.draw()
+        // })
+
+        // $.fn.dataTable.ext.search.push(
+        //     function (settings, data, dataIndex) {
+        //         var fromDate = $('#fromDate').val();
+        //         var toDate = $('#toDate').val();
+        //         var date = moment(data[3], 'DD MMM YYYY HH:mm:ss');
+        //         //                    console.log(data[10])
+        //         if ((fromDate === "" && toDate === "") ||
+        //             (fromDate === "" && date <= moment(toDate, 'DD MMM YYYY HH:mm:ss')) ||
+        //             (moment(fromDate, 'DD MMM YYYY HH:mm:ss') <= date && toDate === "") ||
+        //             (moment(fromDate, 'DD MMM YYYY HH:mm:ss') <= date && date <= moment(toDate, 'DD MMM YYYY HH:mm:ss'))) {
+        //             return true;
+        //         }
+        //         return false;
+        //     }
+        // );
+
+        $(`#search_element`).keyup(function () {
+          const selectValue = $(`#select_element`).val();
+          let searchedText = $(`#search_element`).val();
+          if (searchedText.length >= 1) {
+            const searchedList = searchedText
+              .split(";")
+              .filter((c) => c !== "");
+            if (searchedList.length > 1) searchedText = searchedList.join("|");
+            table.column(selectValue).search(searchedText, true, false).draw();
+          } else {
+            table.search("").columns().search("").draw();
+          }
+        });
+
+        table
+          .columns()
+          .flatten()
+          .each(function (colID) {
+            var colIds = [6, 7, 8, 9]; //2, 7, 9
+            if (colIds.includes(colID)) {
+              // Create the select list in the
+              // header column header
+              // On change of the list values,
+              // perform search operation
+              //console.log(colID)
+              var mySelectList = $(
+                "<select class='' style='max-width:100px' />"
+              )
+                .appendTo(table.column(colID).header())
+                .on("change", function () {
+                  table.column(colID).search($(this).val());
+
+                  // update the changes using draw() method
+                  table.column(colID).draw();
+                });
+              // Get the search cached data for the
+              // first column add to the select list
+              // using append() method
+              // sort the data to display to user
+              // all steps are done for EACH column
+              const distinct = (value, index, self) =>
+                self.indexOf(value) == index;
+
+              table
+                .column(colID)
+                .cache("search")
+                .sort()
+                .filter(distinct)
+                .each(function (param) {
+                  mySelectList.append(
+                    $('<option value="' + param + '">' + param + "</option>")
+                  );
+                });
+            }
+          });
+        $('select[name="logs_table_length"]')
+          .parent()
+          .attr("class", "form-control mb-2"); //logs_table_length
+        $('select[name="logs_table_length"]')
+          .parent()
+          .attr("style", "display:flex;flex-direction:row;align-items:center;"); //logs_table_length
+        $('select[name="logs_table_length"]').attr(
+          "class",
+          "form-control form-select"
+        ); //logs_table_length
+        $('select[name="logs_table_length"]').attr(
+          "style",
+          "width:70px;margin-left:5px;margin-right:5px"
+        ); //logs_table_length
+        $('input[type="search"]').parent().attr("class", "form-control mb-2");
+        $('input[type="search"]')
+          .parent()
+          .attr(
+            "style",
+            "display:flex;flex-direction:row;align-items:center;justify-content:cenetr"
+          );
+        $('input[type="search"]').attr("class", "form-control");
+        $("a.toggle-vis").on("click", function (e) {
+          e.preventDefault();
+
+          // Get the column API object
+          var column = table.column($(this).attr("data-column"));
+          if (column.visible() == true) {
+            $(this).attr("class", "btn btn-dark");
+          } else {
+            $(this).removeAttr("class");
+            $(this).attr("class", "btn btn-outline-warning");
+          }
+          // Toggle the visibility
+          column.visible(!column.visible());
+        });
+        // Refilter the table
+        $("#min, #max").on("change", function () {
+          table.draw();
+        });
+        //resetting the filters
+        $("button.resetFilters").on("click", function () {
+          // Remove all filtering
+          table.search("").columns().search("").draw();
+
+          //clearing the search
+          $("#search_element").val("");
+        });
+      });
+    </script>
+    <script>
+      const viewDetails = async (EventId) => {
+        let staticBackdropLabel = document.getElementById(
+          "staticBackdropLabel"
+        );
+        let staticBackdropFooter = document.getElementById(
+          "staticBackdropFooter"
+        );
+        staticBackdropLabel.innerHTML = "Event Details";
+        console.log("clicked for event", EventId);
+        var response = await fetch(
+          `http://127.0.0.1:7000/events/${EventId}?users=1`
+        );
+        var data = await response.json();
+        modalHtmlData = `<div class="">
+          <h7 class="text-muted">Event</h7>
+          <p class="text-info">${data.Event.Title}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">Event Scheduled on</h7>
+          <p class="text-info">${data.Event.EventDateTime}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">Active participants</h7>
+          <p class="text-info">${data.Event.NoOfParticipentsRegistered}</p>
+        </div>
+        <div class="">
+          <h7 class="text-muted">Location</h7>
+          <p class="text-info">${data.Event.Location}</p>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center" >
+            <h5 class="text-warning text-center">Registered Users</h5>
+            <table id="users_table" class="table table-bordered table-dark table-stripped table-hover" style="width:100%">
+                    <thead class="col-12" style="">
+                        <tr class="">
+                            <th></th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Location</th>
+                            <th>is Subscribed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.Users.map((user) => {
+                          return `<tr>
+                                <td><input class="form-check-input" name="${
+                                  user.UserId
+                                }" id="checkBoxEventListener" type="checkbox" /></td>
+                                <td>${user.FirstName}</td>
+                                <td>${user.LastName}</td>
+                                <td>${user.Email}</td>
+                                <td>${user.Location}</td>
+                                ${
+                                  user.isSubscribed === true
+                                    ? `<td class="bg-success">${user.isSubscribed}</td>`
+                                    : `<td class="bg-danger">${user.isSubscribed}</td>`
+                                }
+                            </tr>`;
+                        })}
+                    </tbody>
+                </table>
+        </div>
+        `;
+        staticBackdropFooter.innerHTML = `<div class="text-center">
+                    </div> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+
+        let modalElement = document.getElementById("eventmodal");
+        modalElement.innerHTML = modalHtmlData;
+      };
+      const getEventForm = () => {
+        return [
+          `<form class="row g-3" action="/users/events/register" method="post">
+                    <div class="col-12">
+                        <label for="Title" class="form-label">Title</label>
+                        <input name="Title" type="text" class="form-control" id="Title">
+                      </div>
+                      <div class="col-12">
+                        <label for="Description" class="form-label">Description</label>
+                        <input name="Description" type="text" class="form-control" id="Description">
+                      </div>
+                    <div class="col-12">
+                        <label for="EventDateTime" class="form-label">EventDateTime</label>
+                        <input name="EventDateTime" type="EventDateTime" class="form-control" id="EventDateTime">
+                      </div>
+                    <div class="col-12">
+                      <label for="MaxNoOfSeats" class="form-label">MaxNoOfSeats</label>
+                      <input name="MaxNoOfSeats" type="text" class="form-control" id="MaxNoOfSeats" placeholder="1234 Main St">
+                    </div>
+                    <div class="col-12">
+                      <label for="Location" class="form-label">Location</label>
+                      <input name="Location" type="text" class="form-control" id="Location" placeholder="Enter your Location">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="City" class="form-label">City</label>
+                      <input name="City" type="text" class="form-control" id="City">
+                    </div>
+                    <div class="col-md-4">
+                      <label for="State" class="form-label">State</label>
+                      <select name="state" id="State" class="form-select">
+                        <option selected disabled>Choose...</option>
+                        <option>Andhra Pradesh</option>
+                        <option>Telangana</option>
+                      </select>
+                    </div>
+                  </form>`,
+        ];
+      };
+      const getNewEvent = () => {
+        let staticBackdropLabel = document.getElementById(
+          "staticBackdropLabel"
+        );
+        let eventmodal = document.getElementById("eventmodal");
+        let staticBackdropFooter = document.getElementById(
+          "staticBackdropFooter"
+        );
+        staticBackdropLabel.innerHTML = "ADD An Event";
+        const eventForm = getEventForm();
+        eventmodal.innerHTML = eventForm[0];
+        //   const range = document.createRange()
+        //   const createButton = range.createContextualFragment(`<div class="text-center">
+        //         <button type='button' class="btn btn-success" onClick="CreateEvent()">Create</button>
+        //     </div> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`)
+        //   staticBackdropFooter.appendChild(createButton)
+        staticBackdropFooter.innerHTML = `<div class="text-center">
+                        <button type='button' class="btn btn-success" id="CreateEvent" onClick="CreateEvent()">Create</button>
+                    </div> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+      };
+      const removeAlert = () => {
+        setTimeout(() => {
+          const alertElement = document.getElementById("alert");
+          alertElement.innerHTML = null;
+          console.log("removed");
+        }, 2000);
+      };
+      //  const CreateEvent = async()=>
+      //  {
+      //     const alertElement = document.getElementById("alert");
+      //     const myModal = document.getElementById('staticBackdrop')
+      //     let Title = document.getElementById("Title").value
+      //     let Description = document.getElementById("Description").value
+      //     let EventDateTime = document.getElementById("EventDateTime").value
+      //     let MaxNoOfSeats = document.getElementById("MaxNoOfSeats").value
+      //     let Location = document.getElementById("Location").value
+      //     let City = document.getElementById("City").value
+      //     let State = document.getElementById("State").value
+      //     const eventDetails = {Title:Title,Description:Description,EventDateTime:EventDateTime,MaxNoOfSeats:MaxNoOfSeats,Location:Location,City:City,State:State}
+      //     let response = await fetch('http://127.0.0.1:7000/events',{
+      //     method:'POST',
+      //     headers:{
+      //       'Content-Type':'application/json'
+      //     },
+      //     body:JSON.stringify(eventDetails)
+      //   })
+      //   let responseData = await response.json()
+      //   console.log(response)
+      //   if(response.status===422)
+      //   {
+      //     alertElement.innerHTML = `<div class="alert alert-danger" role="alert">${responseData.message}</div>`;
+      //   }
+      //   else if(response.status===222)
+      //   {
+      //     alertElement.innerHTML = `<div class="alert alert-warning" role="alert">${responseData.message}</div>`;
+      //     $(myModal).modal('hide')
+      //   }
+      //   else
+      //   {
+      //     alertElement.innerHTML = `<div class="alert alert-success" role="alert">${responseData.message}</div>`;
+      //     $(myModal).modal('hide')
+      //   }
+      //   removeAlert();
+      // }
+      const CreateEvent = async () => {
+        const alertElement = document.getElementById("alert");
+        const myModal = document.getElementById("staticBackdrop");
+        let Title = document.getElementById("Title").value;
+        let Description = document.getElementById("Description").value;
+        let EventDateTime = document.getElementById("EventDateTime").value;
+        let MaxNoOfSeats = document.getElementById("MaxNoOfSeats").value;
+        let Location = document.getElementById("Location").value;
+        let City = document.getElementById("City").value;
+        let State = document.getElementById("State").value;
+        const eventDetails = {
+          Title: Title,
+          Description: Description,
+          EventDateTime: EventDateTime,
+          MaxNoOfSeats: MaxNoOfSeats,
+          Location: Location,
+          City: City,
+          State: State,
+        };
+        let response = await fetch("http://127.0.0.1:7000/events", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(eventDetails),
+        });
+        let responseData = await response.json();
+        console.log(response);
+        if (response.status === 200) {
+          alertElement.innerHTML = `<div class="alert alert-success" role="alert">${responseData.message}</div>`;
+          $(myModal).modal("hide");
+          const table = $("#logs_table").DataTable();
+          let {
+            EventId,
+            Title,
+            Description,
+            EventDateTime,
+            MaxNoOfSeats,
+            NoOfParticipentsRegistered,
+            Location,
+            City,
+            State,
+            Status,
+          } = responseData.Event;
+          console.log({
+            EventId,
+            Title,
+            Description,
+            EventDateTime,
+            MaxNoOfSeats,
+            NoOfParticipentsRegistered,
+            Location,
+            City,
+            State,
+            Status,
+          });
+          table.row
+            .add([
+              `<input class="form-check-input" name="${EventId}" id="checkBoxEventListener" type="checkbox" />`,
+              Title,
+              Description.length > 30
+                ? Description.substring(0, 30) + "..."
+                : Description,
+              EventDateTime,
+              MaxNoOfSeats,
+              NoOfParticipentsRegistered,
+              Location,
+              City,
+              State,
+              Status,
+              `<button class="btn btn-info text-center" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="viewDetails('${EventId}')" >ViewDetails</button>
+            <button class="btn btn-warning text-center" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="editDetails" onclick="editDetails('${EventId}','${Title}')" >EditDetails</button>`,
+            ])
+            .draw();
+        } else {
+          alertElement.innerHTML = `<div class="alert alert-danger" role="alert">${responseData.message}</div>`;
+        }
+        removeAlert();
+      };
+      const getEventEditForm = async (eventId) => {
+        var response = await fetch(`http://127.0.0.1:7000/events/${eventId}`);
+        var data = await response.json();
+        let {
+          Title,
+          Description,
+          EventDateTime,
+          MaxNoOfSeats,
+          Location,
+          City,
+        } = data;
+        console.log(Title);
+        return `<form class="row g-3" action="/users/events/register" method="post">
+                    <div class="col-12">
+                        <label for="Title" class="form-label">Title</label>
+                        <input name="Title" type="text" class="form-control" value='${Title}' id="Title"/>
+                      </div>
+                      <div class="col-12">
+                        <label for="Description" class="form-label">Description</label>
+                        <textarea name="Description" type="text" class="form-control" id="Description">${Description}</textarea>
+                      </div>
+                    <div class="col-12">
+                        <label for="EventDateTime" class="form-label">EventDateTime</label>
+                        <input name="EventDateTime" type="datetime" class="form-control" value='${EventDateTime}' id="EventDateTime"/>
+                      </div>
+                    <div class="col-12">
+                      <label for="MaxNoOfSeats" class="form-label">MaxNoOfSeats</label>
+                      <input name="MaxNoOfSeats" type="number" min='0' class="form-control" value='${MaxNoOfSeats}' id="MaxNoOfSeats" placeholder="1234 Main St"/>
+                    </div>
+                    <div class="col-12">
+                      <label for="Location" class="form-label">Location</label>
+                      <input name="Location" type="text" class="form-control" value='${Location}' id="Location" placeholder="Enter your Location"/>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="City" class="form-label">City</label>
+                      <input name="City" type="text" class="form-control" value='${City}' id="City"/>
+                    </div>
+                    <div class="col-md-4">
+                      <label for="State" class="form-label">State</label>
+                      <select name="state" id="State" class="form-select">
+                        <option selected disabled>Choose...</option>
+                        <option>Andhra Pradesh</option>
+                        <option>Telangana</option>
+                      </select>
+                    </div>
+                  </form>`;
+      };
+      const editDetails = async (eventId, title) => {
+        let staticBackdropLabel = document.getElementById(
+          "staticBackdropLabel"
+        );
+        let eventmodal = document.getElementById("eventmodal");
+        eventmodal.innerHTML = null;
+        let staticBackdropFooter = document.getElementById(
+          "staticBackdropFooter"
+        );
+        staticBackdropLabel.innerHTML = `<span class="text-info">${title}</span> (<span class="text-warning">Edit Event</span>)`;
+        staticBackdropFooter.innerHTML = `<div class="text-center">
+                        <button type='button' class="btn btn-warning" id="EditEvent" onClick="EditEvent('${eventId}')">Edit</button>
+                    </div> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+        eventmodal.innerHTML = await getEventEditForm(eventId);
+      };
+      const EditEvent = async (EventId) => {
+        const table = $("#logs_table").DataTable();
+        const rowIndex = table.row(".index").index();
+        const alertElement = document.getElementById("alert");
+        const myModal = document.getElementById("staticBackdrop");
+        let Title = document.getElementById("Title").value;
+        let Description = document.getElementById("Description").value;
+        let EventDateTime = document.getElementById("EventDateTime").value;
+        let MaxNoOfSeats = document.getElementById("MaxNoOfSeats").value;
+        let Location = document.getElementById("Location").value;
+        let City = document.getElementById("City").value;
+        let State = document.getElementById("State").value;
+        const eventDetails = {
+          EventId: EventId,
+          Title: Title,
+          Description: Description,
+          EventDateTime: EventDateTime,
+          MaxNoOfSeats: MaxNoOfSeats,
+          Location: Location,
+          City: City,
+          State: State,
+        };
+        let response = await fetch("http://127.0.0.1:7000/events", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(eventDetails),
+        });
+        let responseData = await response.json();
+        console.log(response);
+        if (response.status === 200) {
+          alertElement.innerHTML = `<div class="alert alert-success" role="alert">${responseData.message}</div>`;
+          const table = $("#logs_table").DataTable();
+          let {
+            EventId,
+            Title,
+            Description,
+            EventDateTime,
+            MaxNoOfSeats,
+            NoOfParticipentsRegistered,
+            Location,
+            City,
+            State,
+            Status,
+          } = responseData.Event;
+
+          table
+            .row(rowIndex)
+            .data([
+              `<input class="form-check-input" name="${EventId}" id="checkBoxEventListener" type="checkbox" />`,
+              Title,
+              Description.length > 30
+                ? Description.substring(0, 30) + "..."
+                : Description,
+              EventDateTime,
+              MaxNoOfSeats,
+              NoOfParticipentsRegistered,
+              Location,
+              City,
+              State,
+              Status,
+              `<button class="btn btn-info text-center" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="viewDetails('${EventId}')" >ViewDetails</button>
+            <button class="btn btn-warning text-center" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="editDetails" onclick="editDetails('${EventId}','${Title}')" >EditDetails</button>`,
+            ])
+            .draw();
+          $(myModal).modal("hide");
+          $(".index").toggleClass("index");
+        } else {
+          alertElement.innerHTML = `<div class="alert alert-danger" role="alert">${responseData.message}</div>`;
+        }
+        removeAlert();
+      };
+    </script>
+  </body>
+</html>

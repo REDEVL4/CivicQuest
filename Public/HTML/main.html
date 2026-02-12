@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Go Green</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      crossorigin="anonymous"
+    />
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./CSS/main.css" />
+    
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&display=swap"
+      rel="stylesheet"
+    />
+<link href="https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./CSS/bootstrap.css"/>
+  </head>
+  <body style="background-image: url('./Img/HomeBackground.jpg')">
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">
+          <div id="headerText">Eco Guardians<span id="tagLine">Serving Nature</span></div></a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link headerIcons" href="/"
+              ><i class="fa fa-home" title="Home" aria-hidden="true"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/game"
+              ><i class="fa fa-gamepad" title="Game"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/communityHome"
+              ><i class="fa fa-users" title="Community Service"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/UserHome">
+              <i class="fa fa-user" title="User"></i
+            ></a>
+            <a class="nav-item nav-link headerIcons" href="/AdminHome">
+              <i class="fa fa-user-plus" title="Admin"></i
+            ></a>
+
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div id="leaves">
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i>
+        <i></i> 
+      </div>
+      <div id="descriptionDiv" style="color:greenyellow"><p>In today's busy and chaotic world, people are unaware of the various environmental/lifestyle issues in every day life that are causing serious danger to the eco system. Also, there is a lack of common platform for bringing everyone together to act upon the issues and reduce the impact of these problems</p>
+        <p>Our Application is a one stop solution for all the problems revolving around the Sustainable Living in today's world.
+          The main goal of our application is to create awareness on the various issues in our enviroment and current lifestyle.
+        It also showcases the feasible solutions which helps in experiencing a healthy and happy life while adopting the principles of sustainable living.
+          </p></div>
+      <div>
+
+      <div id="pictureDiv"></div>
+      
+      <button type="button" class="btn position-fixed bottom-0 end-0"  id="liveToastBtn"><p class="p-2 bg-primary text-white rounded" id="ecoAssistantHome"> Eco Assistant  <img src="https://cdn3.iconfinder.com/data/icons/contact-us-set-2/256/52-512.png" width="40px" height="40px" alt="chat"/></p></button>
+
+      <div class="toast-container position-fixed bottom-0 end-0 p-3" style="width:400px;">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header bg-primary">
+            <!-- <img width="260px" height="70px" src="https://4.bp.blogspot.com/-UrSNCG-VncM/VDK41v4_GFI/AAAAAAAAFW0/QFj2jqhn8Dk/s1600/Logo%2BHexagon.png" class="rounded me-2" alt="..."> -->
+            <strong class="me-auto text-white">Eco Assistant</strong>
+            <!-- <small>11 mins ago</small> -->
+            <button  style="background-color: aliceblue;" type="button" onclick="toggleAssistant()" class="btn-close"  aria-label="Close"></button>
+          </div>
+          <div class="toast-body text-center" style="font-weight: 600;">
+            <iframe  src='https://webchat.botframework.com/embed/lanservice-bot?s=Wzh8jxSjVYQ.ljj1kvBs5lkpAnS0kXjDtyC7vmUQzvyGYC7n9bEyn1U'  style='min-width: 300px; width: 100%; min-height: 400px;'></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-content">
+        <ul class="socials">
+          <li>
+            <a href="https://www.facebook.com/gogreeninitiative.org/" target="_blank"><i class="fa fa-facebook"></i></a>
+          </li>
+          <li>
+            <a href="https://twitter.com/greeninitiative" target="_blank"><i class="fa fa-twitter"></i></a>
+          </li>
+          <li>
+            <a href="https://instagram.com/gogreeninitiative" target="_blank"><i class="fa fa-instagram"></i></a>
+          </li>
+          <li>
+            <a href="https://www.youtube.com/user/GoGreenInitiative" target="_blank"><i class="fa fa-youtube"></i></a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/go-green-initiative/" target="_blank"><i class="fa fa-linkedin-square"></i></a>
+          </li>
+          <li>
+            <span style="font-size: 9px"> copyright &copy;</span>
+            <span style="text-decoration: underline; font-size: 11px">
+              Go Green</span
+            >
+          </li>
+        </ul>
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+        <script>
+          const toastTrigger = document.getElementById('liveToastBtn')
+          const toastLiveExample = document.getElementById('liveToast')
+          const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+          toastLiveExample.addEventListener('hidden.bs.toast',()=>
+          {
+            toastTrigger.removeAttribute("hidden")
+          })	
+
+          const toggleAssistant=()=>
+          {
+              toastBootstrap.hide()
+              toastTrigger.removeAttribute("hidden")
+          }
+
+         if (toastTrigger) 
+         {
+             toastTrigger.addEventListener('click', () => {
+             toastTrigger.setAttribute("hidden","hidden")
+             toastBootstrap.show()
+        })
+         }
+        </script>
+  </body>
+</html>
