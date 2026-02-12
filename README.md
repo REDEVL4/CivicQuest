@@ -1,48 +1,48 @@
+# 🌍 CivicQuest — Community Events Portal
 
-# Community Events Portal
+CivicQuest (a hackathon prototype) helps employees and families discover, register for, and manage local volunteering and sustainability events. It also includes a small gamified learning module and basic admin tools.
 
-Lightweight Node.js + Express community events portal for creating and registering volunteers for local events. The project includes server routes, Sequelize models, EJS views and a static frontend in `Public`.
+Summary of what's included
+- Node.js + Express backend with EJS views
+- Sequelize models (User, Event, UsersEventsMapping)
+- Static frontend in `Public/` (HTML/CSS/JS) and EJS templates in `views/`
+- Utilities for GeoIP lookup and email integration (Azure Logic App)
+- Sample seed data created at startup (see `index.js`)
 
-**Quick facts**
-- Tech: Node.js, Express, Sequelize, EJS
-- Entry file: [index.js](index.js)
-- Default port: `7000` (set in `index.js`)
+## Quick start
 
-## Prerequisites
-- Node.js 14+ (recommended)
-- npm (comes with Node.js)
+Prerequisites
+- Node.js 14+ and npm
 
-## Install project
-1. Clone or copy the repo to your machine.
-2. From the project root run:
+Install dependencies
 
 ```bash
 npm install
 ```
 
-Notes: this repository depends on `sqlite3` and ships with `nodemon` in `dependencies`. `npm start` runs `nodemon index.js` by default (see `package.json`).
-
-## Running the app
-- Development (uses `nodemon`):
+Start (development)
 
 ```bash
 npm start
 ```
 
-- Production (direct node):
+Start (production)
 
 ```bash
 node index.js
 ```
 
-Open http://localhost:7000 in your browser after the server starts.
+Open http://localhost:7000
 
-Common mistake: do not run `node start` — use `npm start` instead.
+## Details
 
-## Database configuration
-By default the project uses an in-memory SQLite database (see `Utils/SqlDb.js`). This is useful for demos but data will be lost when the server restarts.
+- Default port: `7000` (changeable in `index.js`)
+- Default DB: in-memory SQLite (see `Utils/SqlDb.js`)
+- Demo user: `reddygovardhan6826@gmail.com` is created by the seed block in `index.js`
 
-Change to a file-based SQLite DB (persistent) by editing `Utils/SqlDb.js` to:
+## Configure a persistent DB
+
+Edit `Utils/SqlDb.js` and replace the in-memory connection with file-based SQLite:
 
 ```javascript
 const { Sequelize } = require('sequelize');
@@ -50,77 +50,33 @@ const sequelize = new Sequelize({ dialect: 'sqlite', storage: './database.sqlite
 module.exports = sequelize;
 ```
 
-Or configure MySQL/Postgres via environment variables, for example:
+Or set `process.env.DATABASE_URL` and use a Postgres/MySQL connection string.
 
-```javascript
-const sequelize = new Sequelize(process.env.DATABASE_URL, { dialect: 'postgres' });
-```
+## Endpoints (examples)
 
-After changing DB config restart the server — `sequelize.sync()` in `index.js` will create the tables if they don't exist.
+- `GET /` — main page (public)
+- `GET /game` — game page
+- `GET /location` — geoip lookup (used by community pages)
 
-## Seed data
-On server start `index.js` runs a seeding block that creates several sample events and a demo user (email: `reddygovardhan6826@gmail.com`). Remove or guard this block for production use (it's inside the `app.listen` callback near the bottom of `index.js`).
-
-## Email sending
-- `Utils/SendMail.js` calls a remote Azure Logic App endpoint to actually send mail. `Utils/SendGroupMail.js` wraps that and iterates recipients.
-- If you want to replace this with SMTP, edit `Utils/SendMail.js` to use `nodemailer` and set SMTP credentials in environment variables.
-
-## Endpoints and usage
-Below are the most-used routes and example requests.
-
-- GET / — main static page
-- GET /game — serves the game
-- GET /location — returns geoip-based location (used by community pages)
-
-User flows (rendered EJS pages):
-- GET /UserLogin — login form
-- POST /UserLogin — body: `{ email, password }` — logs in user (server emulates session with `Utils/LocalStorage.js`)
-- GET /UserRegister — registration form
-- POST /UserRegister — registers a new user (fields come from the HTML form)
-- GET /UserHome — protected user home (relies on `Utils/CheckUserAuth.js`)
+User flows (EJS)
+- `GET /UserLogin`, `POST /UserLogin`
+- `GET /UserRegister`, `POST /UserRegister`
+- `GET /UserHome` (protected)
 
 Events API (JSON)
-- POST /events/register — register a user for an event.
-  - Body (guest): `{ EventId, firstName, lastName, inputEmail, phoneNumber, inputAddress, inputCity, inputZip, inputState, isSubscribed }`
-  - If logged in, the server links the logged-in user (no need to pass email/password).
+- `POST /events/register` — register a user for event (guest or logged-in)
+- `GET /events/:id` — get event (add `?users=1` to include registrations)
+- `GET /events?city=&status=` — filter events
+- `POST /events` — create event (sends group email to subscribed users)
+- `PUT /events` — edit event
 
-- GET /events/:id — returns event JSON. Add `?users=1` to include registered users.
+## Email sending
 
-- GET /events?city=Hyderabad&status=open — query events by city and status.
-
-- POST /events — create a new event (admin). Example JSON body:
-
-```json
-{
-  "Title":"Community Cleanup",
-  "Description":"Help clean the park",
-  "EventDateTime":"2026-04-22",
-  "MaxNoOfSeats":100,
-  "Location":"Park Entrance",
-  "City":"Hyderabad",
-  "State":"Telangana"
-}
-```
-
-Server will send group email to subscribed users when a new event is created (via `Utils/SendGroupMail.js`).
-
-## Troubleshooting
-- If server immediately exits with errors, check the terminal output. Common issues:
-  - `Error: Cannot find module 'sqlite3'` — run `npm install`.
-  - Running `node start` instead of `npm start` — use `npm start` or `node index.js`.
-  - If emails fail, verify network access to the Azure Logic App URL or update `Utils/SendMail.js` to a local SMTP.
-
-## Helpful edits you might make
-- Persist DB between restarts: change `Utils/SqlDb.js` to use file-based SQLite as shown above.
-- Use an environment variable for port: replace `const PORT = 7000` in `index.js` with `const PORT = process.env.PORT || 7000`.
-- Replace `Utils/LocalStorage.js` session emulation with `express-session` for real sessions.
-
-## Development notes
-- Views (EJS) live in `views/` and static frontend in `Public/`.
-- Data access models are in `DataAccess/`.
+`Utils/SendMail.js` calls an Azure Logic App endpoint. To use SMTP instead, replace its implementation with `nodemailer` and environment variables for SMTP credentials.
 
 ## Screenshots
-Screenshots of the main pages (captured with a headless browser) are in the `/screenshots` folder.
+
+Captured screenshots are included in `/screenshots` and displayed here:
 
 ![Home](/screenshots/home.png)
 
@@ -132,11 +88,199 @@ Screenshots of the main pages (captured with a headless browser) are in the `/sc
 
 ![User Register](/screenshots/userRegister.png)
 
+## Notes & troubleshooting
+
+- If push/pull or other GitHub operations require credentials, configure a GitHub Personal Access Token (PAT) and use it when prompted, or set up SSH keys.
+- Do not run `node start` — use `npm start` or `node index.js`.
+- If `sqlite3` is missing: `npm install sqlite3`.
+
 ## Contributing
-- Fixes and documentation improvements welcome. Open issues or PRs.
+
+Open issues or PRs for fixes and docs improvements.
 
 ## License
-- Add a LICENSE file or choose an open-source license.
+
+Add a LICENSE file if you wish to publish under a specific open-source license.
 
 ---
-If you want, I can: add a `serve` script to `package.json` (`node index.js`), update `index.js` to use `process.env.PORT`, or change `Utils/SqlDb.js` to use file-based SQLite — tell me which and I'll apply the change.
+If you'd like, I can: add a `serve` script to `package.json`, update `index.js` to use `process.env.PORT`, or change `Utils/SqlDb.js` to use file-based SQLite — tell me which and I'll apply the change.
+
+CivicQuest is a hackathon (Hexathon) prototype built to empower employees and families to contribute meaningfully to society.
+
+Many individuals want to volunteer or participate in community initiatives but don’t know where to start. CivicQuest bridges that gap by:
+
+- Discovering local volunteering events
+- Enabling seamless event registration
+- Gamifying sustainability education for children
+- Providing AI-powered assistance via Azure Bot
+- Offering an admin portal to manage community initiatives
+
+This project combines community impact, gamification, and AI into one integrated platform.
+
+---
+
+## 🚀 Problem Statement
+
+Employees often want to:
+- Contribute to social causes
+- Participate in local sustainability events
+- Engage their children in meaningful learning
+
+However, discovering reliable local opportunities and staying engaged is difficult.
+
+CivicQuest solves this by centralizing community events and adding interactive, AI-driven engagement.
+
+---
+
+## ✨ Key Features
+
+### 🗓️ Community Events Discovery
+- Displays volunteering and sustainability events in the user's locality
+- Filters events using GeoIP-based city lookup
+- Shows detailed event information:
+  - Date & time
+  - Location
+  - Categories
+  - Maximum seats
+  - Current registrations
+- Allows users to register for open events
+
+---
+
+### 🛠️ Admin Dashboard (Event Management)
+- Secure admin login
+- Create new events
+- Edit existing events
+- Delete events
+- Manage:
+  - Event capacity
+  - Status (open/closed)
+  - City/state
+  - Categories
+  - Images
+
+This enables organizations to easily manage and publish community initiatives.
+
+---
+
+### 🎮 Gamified Learning Mode (Eco Guardians)
+- Mario-style side-scrolling experience
+- “Did you know?” eco facts displayed during gameplay
+- Makes sustainability learning engaging for children
+- Encourages learning while playing
+
+---
+
+### 🤖 Eco Assistant (Azure Bot Integration)
+- Embedded Azure Bot Framework WebChat
+- AI assistant answers questions based on curated local resource data
+- Helps users:
+  - Find relevant events
+  - Understand sustainability topics
+  - Get guidance on participation
+
+---
+
+### 📍 Location-Aware Personalization
+- Uses GeoIP lookup
+- Automatically detects user locality
+- Displays relevant local events
+
+---
+
+### ✉️ Email Integration (Optional)
+- Azure Logic Apps integration
+- Can trigger event-related email notifications
+- Useful for confirmations and group communication
+
+---
+
+## 🧱 System Architecture
+Frontend (HTML, CSS, JS, EJS)
+├── Community Pages
+├── Game Module
+├── Chatbot Widget
+↓
+Node.js + Express Backend
+├── Route Handling
+├── GeoIP Location Detection
+├── Event Registration Logic
+├── Admin CRUD
+├── Azure Bot Integration
+└── Azure Logic App Email Trigger
+↓
+SQLite Database (Sequelize ORM)
+├── Users
+├── Events
+└── User-Event Mapping
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+- Node.js
+- Express.js
+- EJS
+- Sequelize ORM
+- SQLite
+
+### Frontend
+- HTML5
+- CSS3
+- Bootstrap
+- Vanilla JavaScript
+
+### Integrations
+- Azure Bot Framework (WebChat)
+- Azure Logic Apps (Email trigger)
+- GeoIP Lookup
+
+---
+
+## 🗃️ Database Design
+
+### Event Model
+- Title
+- Description
+- Event Date & Time
+- Location
+- City / State
+- Max Seats
+- Current Participants
+- Status (Open/Closed)
+- Categories
+- Images
+
+### User Model
+- Basic authentication fields
+- Profile data
+
+### UsersEventsMapping
+- Many-to-many relationship
+- Tracks event registrations
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (LTS recommended)
+- npm
+
+### Install Dependencies
+
+```bash
+npm install
+
+#Run the Application
+npm start
+
+# Default:
+http://localhost:7000
+
+```
+👨‍💻 Author
+
+Govardhan Reddy Narala
+>>>>>>> origin/main
